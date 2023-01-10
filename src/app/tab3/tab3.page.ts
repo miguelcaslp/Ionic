@@ -1,32 +1,60 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Camera, CameraResultType } from '@capacitor/camera';
-import { IonImg } from '@ionic/angular';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { RecordingData, VoiceRecorder, VoiceRecorderPlugin } from 'capacitor-voice-recorder';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { async } from '@firebase/util';
+
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss']
 })
-export class Tab3Page {
-  @ViewChild('foto') foto:IonImg;
+export class Tab3Page implements OnInit {
+  recording=false;
+  storedFiles = [];
   constructor() {}
+  
+  ngOnInit(){
+    this.loadFiles
+    VoiceRecorder.requestAudioRecordingPermission();
+  }
 
-  public async hazfoto(){
-    const image = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Uri,
-
+  public async loadFiles(){
+    Filesystem.readdir({
+      path:'',
+      directory:Directory.Data
+    }).then(result =>{
+      this.storedFiles=result.files;
     });
-  
-    // image.webPath will contain a path that can be set as an image src.
-    // You can access the original file using image.path, which can be
-    // passed to the Filesystem API to read the raw data of the image,
-    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    let imageUrl = image.webPath;
-  
-    // Can be set to the src of an image now
+  }
 
-    this.foto.src = imageUrl;
+  public async grabar(){
+    if(this.recording){
+      return;
+    }
+    this.recording=true;
+    VoiceRecorder.startRecording();
+
+  }
+
+  public async stop(){
+    if(!this.recording){
+      return;
+    }
+    this.recording=false;
+    VoiceRecorder.stopRecording().then(async(result: RecordingData)=>{
+      if(result.value && result.value.recordDataBase64){
+        const recordData= result.value.recordDataBase64;
+        console.log(recordData);
+        const fileName=new Date().getTime + '.wav';
+        await Filesystem.writeFile({
+          path:fileName,
+          directory:Directory.Data,
+          data:recordData
+        });
+        this.loadFiles();
+      }
+    })
+   
   }
 
 }
