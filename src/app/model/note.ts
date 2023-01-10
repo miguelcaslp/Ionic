@@ -1,6 +1,9 @@
+import { IonImg } from '@ionic/angular';
 export interface Note{
     id?:string,
     title:string,
     description:string,
-    hided?:boolean
+    hided?:boolean,
+    //Atributo para guardar imagen
+    photo?:String
 }

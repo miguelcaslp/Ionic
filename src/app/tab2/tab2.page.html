@@ -16,6 +16,11 @@
       <ion-label>Description</ion-label>
       <ion-textarea formControlName="description"></ion-textarea>
     </ion-item>
-    <ion-button shape="round" color="primary" fill="outline" type="submit" [disabled]="!todo.valid">Submit</ion-button>
+    <ion-button id="camera" (click)="hazfoto();">Haz Foto</ion-button>
+    <ion-item>
+      <ion-img  id="image" #foto src="" ></ion-img>
+    </ion-item>
+
+      <ion-button id="submit" shape="round" color="primary" fill="outline" type="submit" [disabled]="!todo.valid">Submit</ion-button>
   </form>
 </ion-content>

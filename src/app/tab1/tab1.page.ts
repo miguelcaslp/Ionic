@@ -15,9 +15,15 @@ export class Tab1Page implements OnInit {
   public notes:Note[] =[];
   constructor(private noteS:NotesService,
     private uiS:UiService,
-    private modalCtrl: ModalController) {
+    private modalCtrl: ModalController,
+    ) {}
 
-  }
+    ionViewWillEnter(event) {
+
+      this.loadNotes(event);
+    }
+
+  
   async ngOnInit(){
     await this.uiS.showLoading();
     this.notes = await this.noteS.getNotes(true);
@@ -50,6 +56,7 @@ export class Tab1Page implements OnInit {
     
 
   }
+
   public async loadNotes(event){
     this.notes = await this.noteS.getNotes(true);
     event.target.complete();
